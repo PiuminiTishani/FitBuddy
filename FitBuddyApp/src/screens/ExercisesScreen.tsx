@@ -169,12 +169,7 @@ const ExercisesScreen: React.FC<ExercisesScreenProps> = ({ navigation }) => {
         </View>
 
         {/* Category Filter Pills */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={styles.filterScroll}
-          contentContainerStyle={styles.filterContent}
-        >
+        <View style={styles.filterContainer}>
           {filters.map((filter) => (
             <TouchableOpacity
               key={filter.value}
@@ -205,7 +200,7 @@ const ExercisesScreen: React.FC<ExercisesScreenProps> = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           ))}
-        </ScrollView>
+        </View>
 
         {/* Exercises Grid */}
         {filteredExercises.length > 0 ? (
@@ -279,17 +274,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
     padding: 0,
   },
+  filterContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    marginBottom: 16,
+    justifyContent: 'space-between',
+  },
   filterScroll: {
     marginBottom: 16,
   },
   filterContent: {
-    paddingHorizontal: 20,
+    flexGrow: 0,
   },
   filterPill: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 20,
-    marginRight: 10,
+    minWidth: 80,
   },
   filterText: {
     fontSize: 14,
