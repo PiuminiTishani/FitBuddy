@@ -24,18 +24,18 @@ interface ColorScheme {
 }
 
 const lightColors: ColorScheme = {
-  primary: '#7c3aed', // Vibrant purple
-  secondary: '#ec4899', // Pink accent
-  background: '#fafafa',
-  card: '#ffffff',
-  text: '#18181b',
-  textSecondary: '#71717a',
-  border: '#e4e4e7',
-  error: '#ef4444',
-  success: '#10b981',
-  warning: '#f59e0b',
-  gradient1: '#7c3aed',
-  gradient2: '#ec4899',
+  primary: '#8B5CF6', // Vibrant purple
+  secondary: '#EC4899', // Hot pink accent
+  background: '#F8F9FA',
+  card: '#FFFFFF',
+  text: '#1F2937',
+  textSecondary: '#6B7280',
+  border: '#E5E7EB',
+  error: '#EF4444',
+  success: '#10B981',
+  warning: '#F59E0B',
+  gradient1: '#8B5CF6',
+  gradient2: '#EC4899',
 };
 
 const darkColors: ColorScheme = {

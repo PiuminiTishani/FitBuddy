@@ -13,6 +13,7 @@ import RegisterScreen from '../screens/RegisterScreen';
 
 // Main Screens
 import HomeScreen from '../screens/HomeScreen';
+import ExercisesScreen from '../screens/ExercisesScreen';
 import ExerciseDetailsScreen from '../screens/ExerciseDetailsScreen';
 import FavoritesScreen from '../screens/FavoritesScreen';
 import ProfileScreen from '../screens/ProfileScreen';
@@ -60,6 +61,16 @@ const MainTabs = () => {
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
             <Feather name="home" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Exercises"
+        component={ExercisesScreen}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <Feather name="list" size={size} color={color} />
           ),
         }}
       />
