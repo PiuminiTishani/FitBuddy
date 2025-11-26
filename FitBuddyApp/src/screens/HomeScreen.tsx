@@ -14,6 +14,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { Exercise } from '../store/slices/favoritesSlice';
 import { addFavorite, removeFavorite } from '../store/slices/favoritesSlice';
+import { addWater, resetWater, loadWaterIntakeFromStorage, saveWaterIntakeToStorage } from '../store/slices/waterSlice';
 import ExerciseCard from '../components/ExerciseCard';
 import { exerciseAPI } from '../services/exerciseService';
 import { tipsAPI } from '../services/tipsService';
@@ -26,18 +27,18 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { colors, isDark, toggleTheme } = useTheme();
   const { user } = useAppSelector((state) => state.auth);
   const favorites = useAppSelector((state) => state.favorites.favorites);
+  const { intake: waterIntake, goal: waterGoal } = useAppSelector((state) => state.water);
   const dispatch = useAppDispatch();
 
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [waterIntake, setWaterIntake] = useState(0);
-  const [waterGoal] = useState(2500);
   const [dailyTip, setDailyTip] = useState({ tip: 'Loading tip...', category: 'Fitness' });
   const [recommendedExercises, setRecommendedExercises] = useState<Exercise[]>([]);
 
   useEffect(() => {
     loadDailyTip();
     loadRecommendedExercises();
+    dispatch(loadWaterIntakeFromStorage() as any);
   }, []);
 
   const loadDailyTip = async () => {
@@ -181,7 +182,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <View style={styles.waterButtons}>
             <TouchableOpacity
               style={[styles.waterButton, { borderColor: colors.primary }]}
-              onPress={() => setWaterIntake((prev) => Math.min(prev + 250, waterGoal))}
+              onPress={() => {
+                dispatch(addWater(250));
+                dispatch(saveWaterIntakeToStorage(waterIntake + 250) as any);
+              }}
             >
               <Text style={[styles.waterButtonText, { color: colors.primary }]}>
                 + 250ml
@@ -189,7 +193,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.waterButton, { borderColor: colors.primary }]}
-              onPress={() => setWaterIntake((prev) => Math.min(prev + 500, waterGoal))}
+              onPress={() => {
+                dispatch(addWater(500));
+                dispatch(saveWaterIntakeToStorage(waterIntake + 500) as any);
+              }}
             >
               <Text style={[styles.waterButtonText, { color: colors.primary }]}>
                 + 500ml
@@ -197,7 +204,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.resetButton}
-              onPress={() => setWaterIntake(0)}
+              onPress={() => {
+                dispatch(resetWater());
+                dispatch(saveWaterIntakeToStorage(0) as any);
+              }}
             >
               <Feather name="rotate-ccw" size={20} color={colors.textSecondary} />
             </TouchableOpacity>

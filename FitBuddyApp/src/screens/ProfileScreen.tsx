@@ -12,12 +12,11 @@ import { Feather } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { logout } from '../store/slices/authSlice';
+import { addWater, resetWater, loadWaterIntakeFromStorage, saveWaterIntakeToStorage } from '../store/slices/waterSlice';
 import { secureStorage } from '../utils/secureStorage';
 import WaterIntakeCard from '../components/WaterIntakeCard';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const WATER_INTAKE_KEY = 'water_intake';
-const WATER_GOAL = 2000; // 2000ml daily goal
 const WATER_INCREMENT = 250; // 250ml per glass
 
 const ProfileScreen: React.FC = () => {
@@ -26,8 +25,7 @@ const ProfileScreen: React.FC = () => {
   const { user } = useAppSelector((state) => state.auth);
   const favorites = useAppSelector((state) => state.favorites.favorites);
   const workouts = useAppSelector((state) => state.workout.workouts);
-
-  const [waterIntake, setWaterIntake] = useState(0);
+  const { intake: waterIntake, goal: waterGoal } = useAppSelector((state) => state.water);
 
   // Calculate workout stats
   const totalWorkouts = workouts.length;
@@ -39,46 +37,12 @@ const ProfileScreen: React.FC = () => {
   }).length;
 
   useEffect(() => {
-    loadWaterIntake();
+    dispatch(loadWaterIntakeFromStorage() as any);
   }, []);
 
-  useEffect(() => {
-    saveWaterIntake();
-  }, [waterIntake]);
-
-  const loadWaterIntake = async () => {
-    try {
-      const stored = await AsyncStorage.getItem(WATER_INTAKE_KEY);
-      if (stored) {
-        const data = JSON.parse(stored);
-        // Check if it's today's data
-        const today = new Date().toDateString();
-        if (data.date === today) {
-          setWaterIntake(data.amount);
-        } else {
-          // Reset for new day
-          setWaterIntake(0);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading water intake:', error);
-    }
-  };
-
-  const saveWaterIntake = async () => {
-    try {
-      const data = {
-        amount: waterIntake,
-        date: new Date().toDateString(),
-      };
-      await AsyncStorage.setItem(WATER_INTAKE_KEY, JSON.stringify(data));
-    } catch (error) {
-      console.error('Error saving water intake:', error);
-    }
-  };
-
   const handleAddWater = () => {
-    setWaterIntake((prev) => Math.min(prev + WATER_INCREMENT, WATER_GOAL * 2));
+    dispatch(addWater(WATER_INCREMENT));
+    dispatch(saveWaterIntakeToStorage(waterIntake + WATER_INCREMENT) as any);
   };
 
   const handleResetWater = async () => {
@@ -90,18 +54,9 @@ const ProfileScreen: React.FC = () => {
         {
           text: 'Reset',
           style: 'destructive',
-          onPress: async () => {
-            setWaterIntake(0);
-            // Immediately save to AsyncStorage
-            try {
-              const data = {
-                amount: 0,
-                date: new Date().toDateString(),
-              };
-              await AsyncStorage.setItem(WATER_INTAKE_KEY, JSON.stringify(data));
-            } catch (error) {
-              console.error('Error resetting water intake:', error);
-            }
+          onPress: () => {
+            dispatch(resetWater());
+            dispatch(saveWaterIntakeToStorage(0) as any);
           },
         },
       ]
@@ -225,7 +180,7 @@ const ProfileScreen: React.FC = () => {
 
         <WaterIntakeCard
           currentIntake={waterIntake}
-          goal={WATER_GOAL}
+          goal={waterGoal}
           onAddWater={handleAddWater}
         />
 
